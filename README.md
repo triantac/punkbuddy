@@ -1,1 +1,1 @@
-Punkbudy helps you learn!
+Punkbuddy helps you learn!
