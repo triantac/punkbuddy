@@ -8,6 +8,16 @@ export default () => {
         Recommended for students in the final grade of Primary School onwards.
         Leave your feedback below! Thanks for visiting!
       </p>
+      <form>
+        <div className="mb-3">
+          <label htmlFor="emailAddress" className="form-label">Email address</label>
+          <input type="html" className="form-control" id="emailAddress"/>
+        </div>
+        <div className="mb-3">
+          <label htmlFor="emailAddress" className="form-label">Email address</label>
+          <input type="html" className="form-control" id="emailAddress"/>
+        </div>
+      </form>
     </div>
   )
 }

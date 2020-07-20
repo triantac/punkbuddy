@@ -1,6 +1,8 @@
 import React from 'react'
-import { BrowserRouter as Router, Link, Switch, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Link, Switch, Route, Redirect } from 'react-router-dom'
 import Contact from './Contact'
+import './App.css'
+import Write from './Write'
 
 function App() {
   return (
@@ -16,10 +18,7 @@ function App() {
           <div className="collapse navbar-collapse" id="navbarItems">
             <ul className="navbar-nav">
               <li className="nav-item">
-                <Link to="/writeAndListen" className="nav-link">Write and Listen</Link>
-              </li>
-              <li className="nav-item">
-                <Link to="/writeAndCheck" className="nav-link">Write and Check</Link>
+                <Link to="/write" className="nav-link">Write</Link>
               </li>
               <li className="nav-item">
                 <Link to="/practise" className="nav-link">Practise</Link>
@@ -29,26 +28,27 @@ function App() {
         </div>
       </nav>
 
-      <div className="container">
+      <div className="container-sm p-3 app">
         <Switch>
-          <Route path="/writeAndListen">
-            Write and listen
-        </Route>
-          <Route path="/writeAndCheck">
-            Write and check
-        </Route>
+          <Route exact path="/">
+            <Redirect to="/write" />
+          </Route>
+          <Route path="/write">
+            <Write />
+          </Route>
           <Route path="/practise">
             Practise
-        </Route>
+          </Route>
           <Route path="/contact">
             <Contact />
           </Route>
         </Switch>
       </div>
 
-      <footer>
+      <footer className="footer">
         <div className="container">
-          <Link to="/contact" className="text-muted">Contact</Link></div>
+          <Link to="/contact" className="text-muted">Contact</Link>
+        </div>
       </footer>
     </Router>
   )
