@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { BrowserRouter as Router, Link, Switch, Route, Redirect } from 'react-router-dom'
 import Contact from './Contact'
-import './App.css'
+import './App.scss'
 import Write from './Write'
 
 function App() {

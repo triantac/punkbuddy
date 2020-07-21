@@ -40,3 +40,14 @@
     font-size: 10pt;
     background: #f1f1f1;
 }
+
+@import "~bootstrap/scss/bootstrap";
+
+.reader-textarea {
+    @extend textarea;
+    @extend .form-control;
+}
+
+.highlighted-text {
+    color: #ff0080;
+}
