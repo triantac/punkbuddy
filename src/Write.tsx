@@ -1,11 +1,12 @@
 import React from "react"
+import { Link } from "react-router-dom"
 
 interface IWriteState {
   text: string
   loading: boolean
   listensRemaining: number
   curCharIndex?: number
-  curCharLength?: number
+  canCheck: boolean
 }
 
 interface IReaderTextAreaProps {
@@ -39,7 +40,7 @@ export default class Write extends React.Component<Readonly<{}>, IWriteState> {
       loading: false,
       listensRemaining: 3,
       curCharIndex: undefined,
-      curCharLength: undefined
+      canCheck: false
     }
     this.textarea = React.createRef();
   }
@@ -59,6 +60,7 @@ export default class Write extends React.Component<Readonly<{}>, IWriteState> {
   }
 
   async speak() {
+    this.setState({ canCheck: true })
     if (this.state.listensRemaining <= 0 || this.state.loading)
       return;
 
@@ -102,6 +104,7 @@ export default class Write extends React.Component<Readonly<{}>, IWriteState> {
   }
 
   render() {
+
     const textareaChanged = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
       this.setState({
         text: e.target.value
@@ -116,34 +119,50 @@ export default class Write extends React.Component<Readonly<{}>, IWriteState> {
     const speakDisabled = this.state.loading || this.state.listensRemaining <= 0
 
     return (
-      <div>
-        <h1>Listen to your writing</h1>
-        <p>
-        Modi temporibus esse dolorem quasi dolorem doloremque ipsum similique. Non laudantium temporibus rerum. Assumenda blanditiis aut quo sed ratione non culpa error. Quis dolores sunt harum. Et rerum minima voluptatem eveniet quia cumque commodi.
-        </p>
-        <div className="mb-3">
-          {
-            // this.state.curCharIndex === undefined &&
-            <textarea className="form-control"
-              onChange={textareaChanged}
-              style={{visibility: this.state.curCharIndex === undefined ? "visible" : "hidden"}}
-              ref={this.textarea}
-              id="write-textarea"
-              placeholder="Modi temporibus esse dolorem quasi dolorem doloremque ipsum similique. Non laudantium temporibus rerum. Assumenda blanditiis aut quo sed ratione non culpa error. Quis dolores sunt harum. Et rerum minima voluptatem eveniet quia cumque commodi."
-              rows={6}>
-            </textarea>
-          }
-
-          {
-            this.state.curCharIndex !== undefined &&
-            <ReaderTextArea
-              text={this.state.text}
-              curCharIndex={this.state.curCharIndex ?? 0}
-              height={this.textarea.current?.clientHeight ?? 0}/>
-          }
+      <div className="container">
+        <div className="row mb-3">
+          <h1>Listen to your writing</h1>
         </div>
-        <button className={`btn btn-primary ${speakDisabled ? "disabled" : ""}`}
-          onClick={this.speak.bind(this)}>{speakButtonText}</button>
+        <div className="row">
+          <div className="col-12 col-lg-4">
+            <p>
+              Modi temporibus esse dolorem quasi dolorem doloremque ipsum similique. Non laudantium temporibus rerum. Assumenda blanditiis aut quo sed ratione non culpa error. Quis dolores sunt harum. Et rerum minima voluptatem eveniet quia cumque commodi.
+            </p>
+          </div>
+          <div className="col-12 col-lg-8">
+            <div className="mb-3">
+              {
+                // this.state.curCharIndex === undefined &&
+                <textarea className="form-control"
+                  onChange={textareaChanged}
+                  style={{ visibility: this.state.curCharIndex === undefined ? "visible" : "hidden" }}
+                  ref={this.textarea}
+                  id="write-textarea"
+                  placeholder="Modi temporibus esse dolorem quasi dolorem doloremque ipsum similique. Non laudantium temporibus rerum. Assumenda blanditiis aut quo sed ratione non culpa error. Quis dolores sunt harum. Et rerum minima voluptatem eveniet quia cumque commodi."
+                  rows={6}>
+                </textarea>
+              }
+
+              {
+                this.state.curCharIndex !== undefined &&
+                <ReaderTextArea
+                  text={this.state.text}
+                  curCharIndex={this.state.curCharIndex ?? 0}
+                  height={this.textarea.current?.clientHeight ?? 0} />
+              }
+            </div>
+            <div className="btn-group" role="group">
+              <button className={`btn btn-primary ${speakDisabled ? "disabled" : ""}`}
+                onClick={this.speak.bind(this)}>{speakButtonText}</button>
+              {
+                this.state.canCheck &&
+                <Link to={{ pathname: "/check", state: { text: this.state.text } }} className="btn btn-primary">
+                  Check
+                </Link>
+              }
+            </div>
+          </div>
+        </div>
       </div>
     )
   }

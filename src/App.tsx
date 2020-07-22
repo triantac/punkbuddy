@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Link, Switch, Route, Redirect } from 'react-ro
 import Contact from './Contact'
 import './App.scss'
 import Write from './Write'
+import Check from './Check'
 
 function App() {
   const [useOpenDyslexic, setUseOpenDyslexic] = useState(false)
@@ -38,6 +39,7 @@ function App() {
             <Route path="/write">
               <Write />
             </Route>
+            <Route path="/check" component={Check}/>
             <Route path="/practise">
               Practise
           </Route>
