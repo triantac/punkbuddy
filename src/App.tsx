@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { BrowserRouter as Router, Link, Switch, Route, Redirect } from 'react-router-dom'
-import Contact from './Contact'
+import About from './About'
 import './App.scss'
 import Write from './Write'
 import Check from './Check'
@@ -10,7 +10,7 @@ function App() {
   return (
     <Router>
       <div className={useOpenDyslexic ? "open-dyslexic" : ""}>
-        <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
+        <nav className="navbar navbar-expand-lg navbar-light bg-primary">
           <div className="container-fluid">
             <a className="navbar-brand" href="/">PunkBuddy</a>
 
@@ -21,17 +21,22 @@ function App() {
             <div className="collapse navbar-collapse" id="navbarItems">
               <ul className="navbar-nav">
                 <li className="nav-item">
-                  <Link to="/write" className="nav-link">Write</Link>
+                  <Link to="/write" className="nav-link">Write, Listen, Check</Link>
                 </li>
                 <li className="nav-item">
-                  <Link to="/practise" className="nav-link">Practise</Link>
+                  <Link to="/about" className="nav-link">About</Link>
                 </li>
               </ul>
             </div>
           </div>
         </nav>
 
-        <div className="container-sm p-3 app">
+        <div className="container p-3 app">
+          {/* <div className="row">
+            <p className="lead">
+              Welcome to PunkBuddy! Here, you can write your text, listen to it, and correct it.
+            </p>
+          </div> */}
           <Switch>
             <Route exact path="/">
               <Redirect to="/write" />
@@ -43,15 +48,15 @@ function App() {
             <Route path="/practise">
               Practise
           </Route>
-            <Route path="/contact">
-              <Contact />
+            <Route path="/about">
+              <About />
             </Route>
           </Switch>
         </div>
 
         <footer className="footer">
           <div className="container">
-            <Link to="/contact" className="text-muted">Contact</Link>
+            <Link to="/about" className="text-muted">Contact</Link>
             <div className="form-check form-check-inline float-right">
               <input type="checkbox"
                 className="form-check-input"
