@@ -55,6 +55,25 @@ $secondary: #96ADFC;
     position: relative;
 }
 
-.check-textarea-hint {
+.check-textarea-hint-highlight {
     position: absolute;
+    height: 22px;
+    z-index: -1;
+    
+    background: $warning;
+}
+
+.check-textarea-hint-tooltip {
+    position: absolute;
+    height: 22px;
+    z-index: 2;
+    // pointer-events: none;
+}
+
+.check-textarea  {
+    background: none;
+    z-index: 1;
+    &:focus {
+        background: none;
+    }
 }

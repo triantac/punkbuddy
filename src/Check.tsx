@@ -1,8 +1,34 @@
-import React, { useState, useRef } from "react"
+import React, { useState, useRef, useEffect } from "react"
 import { StaticContext, } from "react-router"
 import { RouteComponentProps, } from "react-router-dom"
 import { countNumWords } from "./Common"
 import getCaretCoordinates from "textarea-caret"
+import { Tooltip } from "bootstrap/dist/js/bootstrap.bundle"
+
+
+interface HintPos {
+  left: number, top: number, width: number, hint: string
+}
+
+function HintHighlight(props: HintPos) {
+  const style = { left: props.left, top: props.top, width: props.width }
+  return <div className="check-textarea-hint-highlight" style={style}></div>
+}
+
+function HintTooltip(props: HintPos) {
+  
+  const self = useRef<HTMLDivElement>(null)
+  
+  useEffect(() => {
+    if (self.current)
+      new Tooltip(self.current) 
+  }, [])
+  
+  // TODO: somehow stop this from swallowing up pointer events to the textarea
+  const style = { left: props.left, top: props.top, width: props.width }
+  return <div ref={self} style={style} className="check-textarea-hint-tooltip"
+    data-toggle="tooltip" data-placement="top" title={props.hint}></div>
+}
 
 export default (props: RouteComponentProps<{}, StaticContext, { text: string }>) => {
   
@@ -11,36 +37,55 @@ export default (props: RouteComponentProps<{}, StaticContext, { text: string }>)
   const [text, setText] = useState(props.location.state.text)
   
 
-  const [typoIndices, setTypoIndices] = useState<number[]>([])
+  const [hintPoses, setHintPoses] = useState<HintPos[]>([])
   
   const textareaChanged = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setText(e.target.value)
-    setTypoIndices([e.target.selectionEnd])
     
+    // TODO: state seems to lag behind
     const text = e.target.textContent
     if (text) {
-      const regex = /but/g
+      const regex = /\s+(but|as|so|though|although) /g
       let match: RegExpExecArray | null
-      var newIndices = []
+      var newIndices: HintPos[] = []
       while ((match = regex.exec(text)) != null) {
-        newIndices.push(match.index)
+        const ta = textarea.current
+        const start = getCaretCoordinates(e.target, match.index + 1)
+        const end = getCaretCoordinates(e.target, match.index + match[0].length - 1)
+        newIndices.push({
+          left: start.left,
+          top: start.top,
+          width: end.left - start.left,
+          hint: "Maybe you should add a pause here."
+        })
       }
-      setTypoIndices(newIndices)
+      
+      const beforeAfterRegex = /\s+(instead|however|firstly|secondly|finally|ultimately|alternatively|eventually|in my opinion|in conclusion) /g
+      while ((match = beforeAfterRegex.exec(text)) != null) {
+        const ta = textarea.current
+        const start = getCaretCoordinates(e.target, match.index + 1)
+        const end = getCaretCoordinates(e.target, match.index + match[0].length - 1)
+        newIndices.push({
+          left: start.left,
+          top: start.top,
+          width: end.left - start.left,
+          hint: "Maybe you should add a pause before and after here."
+        })
+      }
+      
+      setHintPoses(newIndices)
     }
   }
   
   const textarea = useRef<HTMLTextAreaElement>(null)
   
 
-  let hints: JSX.Element[] = []
-  if (textarea.current) {
-    const ta = textarea.current
-    const carets = typoIndices.map(i => getCaretCoordinates(ta, i))
-    const hintPoses = carets.map(c => { return { left: c.left, top: c.top } })
-    hints = hintPoses.map(s =>
-      <div className="check-textarea-hint" style={s}>You should add a comma here</div> 
-    )
-  }
+  const hintHighlights = hintPoses.map((p, i) => 
+    <HintHighlight left={p.left} top={p.top} width={p.width} hint={p.hint} key={i} />
+  )
+  const hintTooltips = hintPoses.map((p, i) => 
+    <HintTooltip left={p.left} top={p.top} width={p.width} hint={p.hint} key={i} />
+  )
   
   const sentenceStart = Math.max(0, text.lastIndexOf('.'))
   const curSentence = text.substr(sentenceStart + 1)
@@ -68,9 +113,10 @@ export default (props: RouteComponentProps<{}, StaticContext, { text: string }>)
       </div>
       <div className="col-lg-8 col-12 mt-3 mb-3">
         <div className="check-textarea-wrapper">
-          <textarea ref={textarea} className="form-control" rows={6} onChange={textareaChanged} defaultValue={text}>
+          {hintTooltips}
+          <textarea ref={textarea} className="form-control check-textarea" rows={6} onChange={textareaChanged} defaultValue={text}>
           </textarea>
-          {hints}
+          {hintHighlights}
         </div>
         <div className="progress mt-3">
           <div className={`progress-bar ${progressColor}`} role="progressbar"
@@ -80,7 +126,7 @@ export default (props: RouteComponentProps<{}, StaticContext, { text: string }>)
             aria-valuemax={maxNumWords}></div>
         </div>
         <div className="mt-1">
-          <strong>{numWordsString}</strong>
+          Sentence length: <strong>{numWordsString}</strong>
           <em className="ml-2">{hintString}</em>
         </div>
       </div>
