@@ -77,6 +77,13 @@ export default (props: RouteComponentProps<{}, StaticContext, { text: string }>)
     }
   }
   
+  useEffect(() => {
+    // Initialize the tooltips
+    const helpEls = document.getElementsByClassName('help-tooltip')
+    for (let i = 0; i < helpEls.length; i++)
+      new Tooltip(helpEls[i])
+  }, [])
+  
   const textarea = useRef<HTMLTextAreaElement>(null)
   
 
@@ -107,10 +114,16 @@ export default (props: RouteComponentProps<{}, StaticContext, { text: string }>)
     <div className="row">
       <div className="col-lg-4 col-12">
         <h1>Check your writing</h1>
-        <p>
-          PunkBuddy checks your text for you. Take a look at the suggestions. Is your punctuation correct? What can you fix?
-        </p>
+          <p>
+            Welcome to PunkBuddy! Here, you can write your text, listen to it, and correct it.
+          </p>
+          <button className="btn btn-outline-info help-tooltip"
+            data-toggle="tooltip" data-placement="top"
+            title="PunkBuddy checks your text for you. Take a look at the suggestions. Is your punctuation correct? What can you fix?">
+            Instructions
+          </button>
       </div>
+      
       <div className="col-lg-8 col-12 mt-3 mb-3">
         <div className="check-textarea-wrapper">
           {hintTooltips}

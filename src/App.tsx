@@ -32,11 +32,6 @@ function App() {
         </nav>
 
         <div className="container p-3 app">
-          {/* <div className="row">
-            <p className="lead">
-              Welcome to PunkBuddy! Here, you can write your text, listen to it, and correct it.
-            </p>
-          </div> */}
           <Switch>
             <Route exact path="/">
               <Redirect to="/write" />

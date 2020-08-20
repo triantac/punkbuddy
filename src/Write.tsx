@@ -148,12 +148,13 @@ export default class Write extends React.Component<Readonly<{}>, IWriteState> {
         <div className="col-12 col-lg-4">
           <h1>Listen to your writing</h1>
           <p>
-            PunkBuddy reads your text for you. Listen to your text a few times and correct it. Then, PunkBuddy will check it for you. Do you hear any pauses? Do you need more pauses?
-            <span className="ml-2 badge bg-secondary help-tooltip"
-              data-toggle="tooltip" data-placement="top"
-              title="PunkBuddy reads your text for you. Listen to your text a few times and correct it. Then, PunkBuddy will check it for you. Do you hear any pauses? Do you need more pauses?">?</span>
-            {/* <a id="help-tooltip" href="#" data-toggle="tooltip" title="" data-original-title="Default tooltip"></a> */}
+            Welcome to PunkBuddy! Here, you can write your text, listen to it, and correct it.
           </p>
+          <button className="btn btn-outline-info help-tooltip"
+            data-toggle="tooltip" data-placement="top"
+            title="PunkBuddy reads your text for you. Listen to your text a few times and correct it. Then, PunkBuddy will check it for you. Do you hear any pauses? Do you need more pauses?">
+            Instructions
+            </button>
         </div>
         <div className="col-12 col-lg-8">
           <div className="mb-3 mt-3">
