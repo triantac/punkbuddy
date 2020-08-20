@@ -136,7 +136,7 @@ export default class Write extends React.Component<Readonly<{}>, IWriteState> {
       })
     }
     
-    const showListenReminder = this.state.numWordsWithoutListen >= 100;
+    const showListenReminder = this.state.numWordsWithoutListen >= 50;
 
     const speakButtonText =
       this.state.listensRemaining <= 0 ?
