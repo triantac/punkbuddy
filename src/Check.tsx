@@ -130,6 +130,7 @@ export default (props: RouteComponentProps<{}, StaticContext, { text: string }>)
           <textarea ref={textarea} className="form-control check-textarea" rows={6} onChange={textareaChanged} defaultValue={text}>
           </textarea>
           {hintHighlights}
+          <div className="check-textarea-background"></div>
         </div>
         <div className="progress mt-3">
           <div className={`progress-bar ${progressColor}`} role="progressbar"

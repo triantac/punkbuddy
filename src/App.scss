@@ -23,20 +23,6 @@
     src: url("./fonts/OpenDyslexic-Italic.otf") format("opentype");
 }
 
-.open-dyslexic {
-    font-family: "Open Dyslexic";
-}
-
-.footer {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    height: 40px;
-    padding-top: 10px;
-    font-size: 10pt;
-    background: #f1f1f1;
-}
-
 $primary: #eddd6e;
 $secondary: #96ADFC;
 
@@ -63,6 +49,16 @@ $secondary: #96ADFC;
     background: $warning;
 }
 
+.check-textarea-background {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    background: white;
+    border-radius: 0.25rem;
+    z-index: -2;
+}
+
 .check-textarea-hint-tooltip {
     position: absolute;
     height: 22px;
@@ -76,4 +72,8 @@ $secondary: #96ADFC;
     &:focus {
         background: none;
     }
+}
+
+body {
+    background: #EDD1B0;
 }
