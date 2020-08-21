@@ -32,8 +32,8 @@ function HintTooltip(props: HintPos) {
 
 export default (props: RouteComponentProps<{}, StaticContext, { text: string }>) => {
   
-  const warningNumWords = 16
-  const maxNumWords = 20
+  const warningNumWords = 15
+  const maxNumWords = 18
   const [text, setText] = useState(props.location.state.text)
   
 
