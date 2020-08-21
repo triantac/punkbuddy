@@ -3,9 +3,13 @@ import { Link } from "react-router-dom"
 import { Tooltip } from "bootstrap/dist/js/bootstrap.bundle"
 import { countNumWords } from "./Common"
 
+enum PlaybackState {
+  Loading, Playing, Paused, Stopped
+}
+
 interface IWriteState {
   text: string
-  loading: boolean
+  playback: PlaybackState
   listensRemaining: number
   curCharIndex?: number
   canCheck: boolean
@@ -41,7 +45,7 @@ export default class Write extends React.Component<Readonly<{}>, IWriteState> {
     super(props)
     this.state = {
       text: 'Hello',
-      loading: false,
+      playback: PlaybackState.Stopped,
       listensRemaining: 5,
       curCharIndex: undefined,
       canCheck: false,
@@ -73,13 +77,13 @@ export default class Write extends React.Component<Readonly<{}>, IWriteState> {
   }
 
   async speak() {
-    if (this.state.listensRemaining <= 0 || this.state.loading)
+    if (this.state.listensRemaining <= 0 || this.state.playback !== PlaybackState.Stopped)
       return;
 
     if (this.state.listensRemaining <= 3)
       this.setState({ canCheck: true })
     this.setState({
-      loading: true,
+      playback: PlaybackState.Loading,
       listensRemaining: this.state.listensRemaining - 1,
       numWordsWithoutListen: 0,
       prevNumWordsWithoutListen: 0
@@ -94,8 +98,8 @@ export default class Write extends React.Component<Readonly<{}>, IWriteState> {
             curCharIndex: e.charIndex
           })
         }
-        utterance.onstart = (e) => this.setState({ curCharIndex: 0 })
-        utterance.onend = (e) => this.setState({ curCharIndex: undefined })
+        utterance.onstart = (e) => this.setState({ curCharIndex: 0, playback: PlaybackState.Playing })
+        utterance.onend = (e) => this.setState({ curCharIndex: undefined, playback: PlaybackState.Stopped })
         utterance.rate = 0.8
 
         // Choose Daniel if we can, to prevent 'Arthur Siri' from being selected
@@ -114,9 +118,26 @@ export default class Write extends React.Component<Readonly<{}>, IWriteState> {
         const base64 = await req.text()
         audio.src = `data:audio/mpeg3;base64,${base64}`
         audio.play()
+        audio.onplay = (e) => this.setState({ playback: PlaybackState.Playing })
+        audio.onended = (e) => this.setState({ playback: PlaybackState.Stopped })
       }
-    } finally {
-      this.setState({ loading: false })
+    } catch {
+      this.setState({ playback: PlaybackState.Stopped })
+    }
+  }
+  
+  play() {
+    //TODO: Handle the Audio() scenario?
+    if ('speechSynthesis' in window) {
+      speechSynthesis.resume()
+      this.setState({ playback: PlaybackState.Playing })
+    }
+  }
+  
+  pause() {
+    if ('speechSynthesis' in window) {
+      speechSynthesis.pause()
+      this.setState({ playback: PlaybackState.Paused })
     }
   }
 
@@ -141,7 +162,7 @@ export default class Write extends React.Component<Readonly<{}>, IWriteState> {
     const speakButtonText =
       this.state.listensRemaining <= 0 ?
         'Out of listens' : `Listen to your text! (${this.state.listensRemaining} attempts remaining)`
-    const speakDisabled = this.state.loading || this.state.listensRemaining <= 0
+    const speakDisabled = this.state.playback !== PlaybackState.Stopped || this.state.listensRemaining <= 0
 
     return (
       <div className="row">
@@ -184,9 +205,17 @@ export default class Write extends React.Component<Readonly<{}>, IWriteState> {
               You should now listen to what you have written so far
             </div>
           }
-          <div className="btn-group" role="group">
+          <div className="btn-group mr-auto" role="group">
             <button className={`btn btn-secondary ${speakDisabled ? "disabled" : ""}`}
               onClick={this.speak.bind(this)}>{speakButtonText}</button>
+            {
+              this.state.playback === PlaybackState.Playing &&
+              <button className="btn btn-secondary" onClick={this.pause.bind(this)}>Pause</button>
+            }
+            {
+              this.state.playback === PlaybackState.Paused &&
+              <button className="btn btn-secondary" onClick={this.play.bind(this)}>Play</button>
+            }
             {
               this.state.canCheck &&
               <Link to={{ pathname: "/check", state: { text: this.state.text } }} className="btn btn-secondary">
