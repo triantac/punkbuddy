@@ -186,7 +186,7 @@ export default class Write extends React.Component<Readonly<{}>, IWriteState> {
                 style={{ visibility: this.state.curCharIndex === undefined ? "visible" : "hidden" }}
                 ref={this.textarea}
                 id="write-textarea"
-                placeholder="Modi temporibus esse dolorem quasi dolorem doloremque ipsum similique. Non laudantium temporibus rerum. Assumenda blanditiis aut quo sed ratione non culpa error. Quis dolores sunt harum. Et rerum minima voluptatem eveniet quia cumque commodi."
+                placeholder="Write your text here"
                 rows={6}>
               </textarea>
             }
