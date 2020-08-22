@@ -20,13 +20,13 @@ export interface HighlightTextareaProps {
 }
 
 
-function HintHighlight(props: HintPos) {
+function HintUnderline(props: HintPos) {
   const style = { left: props.left, top: props.top, width: props.width }
-  return <div className="check-textarea-hint-highlight" style={style}></div>
+  return <div className="highlight-underline" style={style}></div>
 }
 
 
-function HintTooltip(props: HintPos) {
+function HighlightTooltip(props: HintPos) {
   
   const self = useRef<HTMLDivElement>(null)
   
@@ -37,7 +37,7 @@ function HintTooltip(props: HintPos) {
   
   // TODO: somehow stop this from swallowing up pointer events to the textarea
   const style = { left: props.left, top: props.top, width: props.width }
-  return <div ref={self} style={style} className="check-textarea-hint-tooltip"
+  return <div ref={self} style={style} className="highlight-tooltip"
     data-toggle="tooltip" data-placement="top" title={props.hint}></div>
 }
 
@@ -64,12 +64,12 @@ export default (props: HighlightTextareaProps) => {
     highlightPoses = []
   }
 
-  const hintHighlights = highlightPoses.map((p, i) => 
-    <HintHighlight left={p.left} top={p.top} width={p.width} hint={p.hint} key={i} />
+  const underlines = highlightPoses.map((p, i) => 
+    <HintUnderline left={p.left} top={p.top} width={p.width} hint={p.hint} key={i} />
   )
-  const hintTooltips = highlightPoses.flatMap((p, i) => {
+  const tooltips = highlightPoses.flatMap((p, i) => {
     if (p.hint)
-      return [<HintTooltip left={p.left} top={p.top} width={p.width} hint={p.hint} key={i} />]
+      return [<HighlightTooltip left={p.left} top={p.top} width={p.width} hint={p.hint} key={i} />]
     else
       return []
   })
@@ -81,15 +81,15 @@ export default (props: HighlightTextareaProps) => {
   }
   
   return (
-    <div className="check-textarea-wrapper">
-      {hintTooltips}
-      <textarea ref={textareaRef} className="form-control check-textarea" rows={6}
+    <div className="highlight-textarea-wrapper">
+      {tooltips}
+      <textarea ref={textareaRef} className="form-control highlight-textarea" rows={6}
         onChange={onChange}
         defaultValue={props.defaultValue}
         placeholder={props.placeholder}>
       </textarea>
-      {hintHighlights}
-      <div className="check-textarea-background"></div>
+      {underlines}
+      <div className="highlight-textarea-background"></div>
     </div>
   )
 }

@@ -37,19 +37,19 @@ $secondary: #96ADFC;
     color: #ff0080;
 }
 
-.check-textarea-wrapper {
+.highlight-textarea-wrapper {
     position: relative;
 }
 
-.check-textarea-hint-highlight {
+.highlight-underline {
     position: absolute;
     height: 22px;
     z-index: -1;
     
-    background: $warning;
+    border-bottom: 3px solid $warning;
 }
 
-.check-textarea-background {
+.highlight-textarea-background {
     position: absolute;
     width: 100%;
     height: 100%;
@@ -59,14 +59,14 @@ $secondary: #96ADFC;
     z-index: -2;
 }
 
-.check-textarea-hint-tooltip {
+.highlight-tooltip {
     position: absolute;
     height: 22px;
     z-index: 2;
     // pointer-events: none;
 }
 
-.check-textarea  {
+.highlight-textarea  {
     background: none;
     z-index: 1;
     &:focus {
