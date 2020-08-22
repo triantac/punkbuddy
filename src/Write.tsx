@@ -2,6 +2,7 @@ import React from "react"
 import { Link } from "react-router-dom"
 import { Tooltip } from "bootstrap/dist/js/bootstrap.bundle"
 import { countNumWords } from "./Common"
+import HighlightTextArea, { Highlight } from "./HighlightTextArea"
 
 enum PlaybackState {
   Loading, Playing, Paused, Stopped
@@ -11,30 +12,10 @@ interface IWriteState {
   text: string
   playback: PlaybackState
   listensRemaining: number
-  curCharIndex?: number
   canCheck: boolean
   numWordsWithoutListen: number
   prevNumWordsWithoutListen: number
-}
-
-interface IReaderTextAreaProps {
-  text: string
-  curCharIndex: number
-  height: number
-}
-
-function ReaderTextArea(props: IReaderTextAreaProps) {
-  const textBefore = props.text.substr(0, props.curCharIndex)
-  const lengthOfWord = /[^A-Za-z\d']/
-    .exec(props.text.substr(props.curCharIndex))?.index ?? props.text.length
-  const highlightText = props.text.substr(props.curCharIndex, lengthOfWord)
-  const textAfter = props.text.substr(props.curCharIndex + lengthOfWord)
-
-  const height = props.height + 2
-
-  return <div className="reader-textarea" style={{ height: height, marginTop: -height }}>
-    {textBefore}<span className="highlighted-text">{highlightText}</span>{textAfter}
-  </div>
+  highlights: Highlight[]
 }
 
 export default class Write extends React.Component<Readonly<{}>, IWriteState> {
@@ -47,10 +28,10 @@ export default class Write extends React.Component<Readonly<{}>, IWriteState> {
       text: 'Hello',
       playback: PlaybackState.Stopped,
       listensRemaining: 5,
-      curCharIndex: undefined,
       canCheck: false,
       numWordsWithoutListen: 0,
-      prevNumWordsWithoutListen: 0
+      prevNumWordsWithoutListen: 0,
+      highlights: []
     }
     this.textarea = React.createRef();
   }
@@ -94,12 +75,17 @@ export default class Write extends React.Component<Readonly<{}>, IWriteState> {
       if ('speechSynthesis' in window) {
         const utterance = new SpeechSynthesisUtterance(this.state.text)
         utterance.onboundary = (e) => {
+          const lengthOfWord = /[^A-Za-z\d']/
+            .exec(this.state.text.substr(e.charIndex))?.index ?? this.state.text.length 
           this.setState({
-            curCharIndex: e.charIndex
+            highlights: [{
+              pos: e.charIndex,
+              length: lengthOfWord
+            }]
           })
         }
-        utterance.onstart = (e) => this.setState({ curCharIndex: 0, playback: PlaybackState.Playing })
-        utterance.onend = (e) => this.setState({ curCharIndex: undefined, playback: PlaybackState.Stopped })
+        utterance.onstart = (e) => this.setState({ highlights: [], playback: PlaybackState.Playing })
+        utterance.onend = (e) => this.setState({ highlights: [], playback: PlaybackState.Stopped })
         utterance.onerror = console.error
         utterance.rate = 0.8
 
@@ -180,7 +166,9 @@ export default class Write extends React.Component<Readonly<{}>, IWriteState> {
         </div>
         <div className="col-12 col-lg-8">
           <div className="mb-3 mt-3">
-            {
+            <HighlightTextArea onChange={textareaChanged} highlights={this.state.highlights} placeholder="Write your text here"/>
+            
+            {/* {
               // this.state.curCharIndex === undefined &&
               <textarea className="form-control"
                 onChange={textareaChanged}
@@ -198,7 +186,7 @@ export default class Write extends React.Component<Readonly<{}>, IWriteState> {
                 text={this.state.text}
                 curCharIndex={this.state.curCharIndex ?? 0}
                 height={this.textarea.current?.clientHeight ?? 0} />
-            }
+            } */}
           </div>
           {
             showListenReminder &&

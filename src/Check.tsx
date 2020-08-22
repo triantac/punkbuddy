@@ -1,34 +1,9 @@
-import React, { useState, useRef, useEffect } from "react"
+import React, { useState, useEffect } from "react"
 import { StaticContext, } from "react-router"
 import { RouteComponentProps, } from "react-router-dom"
 import { countNumWords } from "./Common"
-import getCaretCoordinates from "textarea-caret"
 import { Tooltip } from "bootstrap/dist/js/bootstrap.bundle"
-
-
-interface HintPos {
-  left: number, top: number, width: number, hint: string
-}
-
-function HintHighlight(props: HintPos) {
-  const style = { left: props.left, top: props.top, width: props.width }
-  return <div className="check-textarea-hint-highlight" style={style}></div>
-}
-
-function HintTooltip(props: HintPos) {
-  
-  const self = useRef<HTMLDivElement>(null)
-  
-  useEffect(() => {
-    if (self.current)
-      new Tooltip(self.current) 
-  }, [])
-  
-  // TODO: somehow stop this from swallowing up pointer events to the textarea
-  const style = { left: props.left, top: props.top, width: props.width }
-  return <div ref={self} style={style} className="check-textarea-hint-tooltip"
-    data-toggle="tooltip" data-placement="top" title={props.hint}></div>
-}
+import HighlightTextArea, { Highlight } from "./HighlightTextArea"
 
 export default (props: RouteComponentProps<{}, StaticContext, { text: string }>) => {
   
@@ -37,7 +12,7 @@ export default (props: RouteComponentProps<{}, StaticContext, { text: string }>)
   const [text, setText] = useState(props.location.state.text)
   
 
-  const [hintPoses, setHintPoses] = useState<HintPos[]>([])
+  const [highlights, setHighlights] = useState<Highlight[]>([])
   
   const textareaChanged = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setText(e.target.value)
@@ -46,15 +21,12 @@ export default (props: RouteComponentProps<{}, StaticContext, { text: string }>)
     const text = e.target.value
     const regex = /\b(but|as|so|though|although)\s/gi
     let match: RegExpExecArray | null
-    var newIndices: HintPos[] = []
+    var newIndices: Highlight[] = []
 
     const addHint = (match: RegExpExecArray, hint: string) => {
-      const start = getCaretCoordinates(e.target, match.index)
-      const end = getCaretCoordinates(e.target, match.index + match[0].length - 1)
       newIndices.push({
-        left: start.left,
-        top: start.top,
-        width: end.left - start.left,
+        pos: match.index,
+        length: match[0].length - 1,
         hint: hint
       })
     }
@@ -73,7 +45,7 @@ export default (props: RouteComponentProps<{}, StaticContext, { text: string }>)
       addHint(match, "Maybe you should add a pause after here.")
     }
 
-    setHintPoses(newIndices)
+    setHighlights(newIndices)
   }
   
   useEffect(() => {
@@ -82,16 +54,6 @@ export default (props: RouteComponentProps<{}, StaticContext, { text: string }>)
     for (let i = 0; i < helpEls.length; i++)
       new Tooltip(helpEls[i])
   }, [])
-  
-  const textarea = useRef<HTMLTextAreaElement>(null)
-  
-
-  const hintHighlights = hintPoses.map((p, i) => 
-    <HintHighlight left={p.left} top={p.top} width={p.width} hint={p.hint} key={i} />
-  )
-  const hintTooltips = hintPoses.map((p, i) => 
-    <HintTooltip left={p.left} top={p.top} width={p.width} hint={p.hint} key={i} />
-  )
   
   const sentenceStart = Math.max(0, text.lastIndexOf('.'))
   const curSentence = text.substr(sentenceStart + 1)
@@ -108,7 +70,7 @@ export default (props: RouteComponentProps<{}, StaticContext, { text: string }>)
     progressColor = 'bg-danger'
     hintString = 'Your sentence is getting too long!'
   }
-
+  
   return (
     <div className="row">
       <div className="col-lg-4 col-12">
@@ -124,13 +86,7 @@ export default (props: RouteComponentProps<{}, StaticContext, { text: string }>)
       </div>
       
       <div className="col-lg-8 col-12 mt-3 mb-3">
-        <div className="check-textarea-wrapper">
-          {hintTooltips}
-          <textarea ref={textarea} className="form-control check-textarea" rows={6} onChange={textareaChanged} defaultValue={text}>
-          </textarea>
-          {hintHighlights}
-          <div className="check-textarea-background"></div>
-        </div>
+        <HighlightTextArea highlights={highlights} onChange={textareaChanged} defaultValue={text}/>
         <div className="progress mt-3">
           <div className={`progress-bar ${progressColor}`} role="progressbar"
             style={{ width: ((numWords / maxNumWords) * 100) + '%' }}
