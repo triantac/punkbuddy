@@ -43,7 +43,7 @@ export default (props: RouteComponentProps<{}, StaticContext, { text: string }>)
     setText(e.target.value)
     
     // TODO: state seems to lag behind
-    const text = e.target.textContent
+    const text = e.target.value
     if (text) {
       const regex = /\b(but|as|so|though|although)\s/gi
       let match: RegExpExecArray | null
