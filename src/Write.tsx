@@ -167,26 +167,6 @@ export default class Write extends React.Component<Readonly<{}>, IWriteState> {
         <div className="col-12 col-lg-8">
           <div className="mb-3 mt-3">
             <HighlightTextArea onChange={textareaChanged} highlights={this.state.highlights} placeholder="Write your text here"/>
-            
-            {/* {
-              // this.state.curCharIndex === undefined &&
-              <textarea className="form-control"
-                onChange={textareaChanged}
-                style={{ visibility: this.state.curCharIndex === undefined ? "visible" : "hidden" }}
-                ref={this.textarea}
-                id="write-textarea"
-                placeholder="Write your text here"
-                rows={6}>
-              </textarea>
-            }
-
-            {
-              this.state.curCharIndex !== undefined &&
-              <ReaderTextArea
-                text={this.state.text}
-                curCharIndex={this.state.curCharIndex ?? 0}
-                height={this.textarea.current?.clientHeight ?? 0} />
-            } */}
           </div>
           {
             showListenReminder &&

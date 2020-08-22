@@ -14,13 +14,18 @@ Handler = Proc.new do |req, res|
 
   cur_char = 0
   cur_text = text
+  # was the previous token an adjective?
+  prev_adj = false
 
   for token in syntax_res.tokens
     # p token.text.content
     offset = token.text.begin_offset
     length = token.text.content.length
     if token.part_of_speech.tag == :ADJ
-      adjectives << {:offset => cur_char, :length => length}
+      adjectives << {:offset => cur_char, :length => length} if prev_adj
+      prev_adj = true
+    else
+      prev_adj = false
     end
     
     # now move on to the next word
@@ -32,5 +37,5 @@ Handler = Proc.new do |req, res|
     end
   end
 
-  res.body = JSON.generate({:adjectives => adjectives})
+  res.body = JSON.generate({:chainedAdjectives => adjectives})
 end

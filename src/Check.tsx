@@ -4,6 +4,21 @@ import { RouteComponentProps, } from "react-router-dom"
 import { countNumWords } from "./Common"
 import { Tooltip } from "bootstrap/dist/js/bootstrap.bundle"
 import HighlightTextArea, { Highlight } from "./HighlightTextArea"
+import AwesomeDebouncePromise from 'awesome-debounce-promise'
+
+interface AnalysisResponse {
+  chainedAdjectives: Adjective[]
+}
+
+interface Adjective {
+  offset: number
+  length: number
+}
+
+const getAnalysis = AwesomeDebouncePromise(async (text: string): Promise<AnalysisResponse> => {
+  const req = await fetch(`api/analysis?text=${text}`)
+  return req.json()
+}, 1000)
 
 export default (props: RouteComponentProps<{}, StaticContext, { text: string }>) => {
   
@@ -14,7 +29,7 @@ export default (props: RouteComponentProps<{}, StaticContext, { text: string }>)
 
   const [highlights, setHighlights] = useState<Highlight[]>([])
   
-  const textareaChanged = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const textareaChanged = async (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setText(e.target.value)
     
     // TODO: state seems to lag behind
@@ -44,7 +59,16 @@ export default (props: RouteComponentProps<{}, StaticContext, { text: string }>)
     while ((match = afterRegex.exec(text)) != null) {
       addHint(match, "Maybe you should add a pause after here.")
     }
-
+    
+    const analysis = await getAnalysis(e.target.value)
+    for (const adj of analysis.chainedAdjectives) {
+      newIndices.push({
+        pos: adj.offset,
+        length: adj.length,
+        hint: "Maybe you should add a comma before here."
+      })
+    }
+    
     setHighlights(newIndices)
   }
   
