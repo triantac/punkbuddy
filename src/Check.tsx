@@ -44,38 +44,36 @@ export default (props: RouteComponentProps<{}, StaticContext, { text: string }>)
     
     // TODO: state seems to lag behind
     const text = e.target.value
-    if (text) {
-      const regex = /\b(but|as|so|though|although)\s/gi
-      let match: RegExpExecArray | null
-      var newIndices: HintPos[] = []
-      
-      const addHint = (match: RegExpExecArray, hint: string) => {
-        const start = getCaretCoordinates(e.target, match.index)
-        const end = getCaretCoordinates(e.target, match.index + match[0].length - 1)
-        newIndices.push({
-          left: start.left,
-          top: start.top,
-          width: end.left - start.left,
-          hint: hint
-        })
-      }
-      
-      while ((match = regex.exec(text)) != null) {
-        addHint(match, "Maybe you should add a pause here.")
-      }
-      
-      const beforeAfterRegex = /\b(instead|however|firstly|secondly|finally|ultimately|alternatively|eventually|in my opinion|in conclusion)\s/gi
-      while ((match = beforeAfterRegex.exec(text)) != null) {
-        addHint(match, "Maybe you should add a pause before and after here.")
-      }
-      
-      const afterRegex = /\b(dear diary|dear sir|dear madam)\s/gi
-      while ((match = afterRegex.exec(text)) != null) {
-        addHint(match, "Maybe you should add a pause after here.")
-      }
-      
-      setHintPoses(newIndices)
+    const regex = /\b(but|as|so|though|although)\s/gi
+    let match: RegExpExecArray | null
+    var newIndices: HintPos[] = []
+
+    const addHint = (match: RegExpExecArray, hint: string) => {
+      const start = getCaretCoordinates(e.target, match.index)
+      const end = getCaretCoordinates(e.target, match.index + match[0].length - 1)
+      newIndices.push({
+        left: start.left,
+        top: start.top,
+        width: end.left - start.left,
+        hint: hint
+      })
     }
+
+    while ((match = regex.exec(text)) != null) {
+      addHint(match, "Maybe you should add a pause here.")
+    }
+
+    const beforeAfterRegex = /\b(instead|however|firstly|secondly|finally|ultimately|alternatively|eventually|in my opinion|in conclusion)\s/gi
+    while ((match = beforeAfterRegex.exec(text)) != null) {
+      addHint(match, "Maybe you should add a pause before and after here.")
+    }
+
+    const afterRegex = /\b(dear diary|dear sir|dear madam)\s/gi
+    while ((match = afterRegex.exec(text)) != null) {
+      addHint(match, "Maybe you should add a pause after here.")
+    }
+
+    setHintPoses(newIndices)
   }
   
   useEffect(() => {
