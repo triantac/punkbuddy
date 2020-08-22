@@ -1,5 +1,5 @@
 require 'google/cloud/text_to_speech'
-require "base64"
+require 'base64'
 
 client = Google::Cloud::TextToSpeech.text_to_speech
 
