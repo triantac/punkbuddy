@@ -1,2 +1,3 @@
 source 'https://rubygems.org'
 gem 'google-cloud-text_to_speech', '~> 1.1'
+gem "google-cloud-language", "~> 1.2"
