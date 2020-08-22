@@ -100,6 +100,7 @@ export default class Write extends React.Component<Readonly<{}>, IWriteState> {
         }
         utterance.onstart = (e) => this.setState({ curCharIndex: 0, playback: PlaybackState.Playing })
         utterance.onend = (e) => this.setState({ curCharIndex: undefined, playback: PlaybackState.Stopped })
+        utterance.onerror = console.error
         utterance.rate = 0.8
 
         // Choose Daniel if we can, to prevent 'Arthur Siri' from being selected
