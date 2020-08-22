@@ -31,9 +31,11 @@ export default (props: RouteComponentProps<{}, StaticContext, { text: string }>)
   
   const textareaChanged = async (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setText(e.target.value)
-    
-    // TODO: state seems to lag behind
-    const text = e.target.value
+    await check(e.target.value)
+  }
+  
+  const check = async (text: string) => {
+    setHighlights([])
     const regex = /\b(but|as|so|though|although)\s/gi
     let match: RegExpExecArray | null
     var newIndices: Highlight[] = []
@@ -60,7 +62,7 @@ export default (props: RouteComponentProps<{}, StaticContext, { text: string }>)
       addHint(match, "Maybe you should add a pause after here.")
     }
     
-    const analysis = await getAnalysis(e.target.value)
+    const analysis = await getAnalysis(text)
     for (const adj of analysis.chainedAdjectives) {
       newIndices.push({
         pos: adj.offset,
@@ -77,6 +79,9 @@ export default (props: RouteComponentProps<{}, StaticContext, { text: string }>)
     const helpEls = document.getElementsByClassName('help-tooltip')
     for (let i = 0; i < helpEls.length; i++)
       new Tooltip(helpEls[i])
+    
+    // Do an initial check
+    check(text)
   }, [])
   
   const sentenceStart = Math.max(0, text.lastIndexOf('.'))
